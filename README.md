@@ -29,9 +29,9 @@ mysql-signals [-S server] [-P port] [-u user] [-p password] [-c credential file]
 We are not ready for contributors until we can get the code cleaned up and standardized for Go best practices.
 
 However, you can contribute by:
-- [Report bugs](https://github.com/opsstack/runqstat/issues/new)
-- [Improve documentation](https://github.com/opsstack/runqstat/issues?q=is%3Aopen+label%3Adocumentation)
-- [Review code and feature proposals](https://github.com/opsstack/runqstat/pulls)
+- [Report bugs](https://github.com/opsstack/mysql-signals/issues/new)
+- [Improve documentation](https://github.com/opsstack/mysql-signals/issues?q=is%3Aopen+label%3Adocumentation)
+- [Review code and feature proposals](https://github.com/opsstack/mysql-signals/pulls)
 
 ## Installation:
 
@@ -48,5 +48,5 @@ There is a single external dependency, [pflag](https://github.com/ogier/pflag)
 See usage with:
 
 ```
-./mysqlmetric --help
+./mysql-signals --help
 ```
