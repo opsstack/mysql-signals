@@ -1,5 +1,5 @@
-# MySQLMetrics
-Golden MySQL Metric Tool
+# MySQL-Signals
+MySQL Golden Signals Metric Tool
 
 This is a Linux command-line tool written in Go for collecting stats from MySQL.
 
@@ -9,7 +9,7 @@ In addition, the code is not fully cleaned up.
 
 Usage:
 
-mysql-signals [-S server] [-P port] [-u user] [-p password] [-c credential file] [-m metric] [-v] [-h]
+mysqlsignals [-S server] [-P port] [-u user] [-p password] [-c credential file] [-m metric] [-v] [-h]
 
   The options are as follows:
 
@@ -35,7 +35,7 @@ However, you can contribute by:
 
 ## Installation:
 
-You can download the binaries directly from the [binaries](https://github.com/opsstack/runqstat/binaries) section.  We'll have RPMs and DEB packages as soon as things stabilize a bit.
+You can download the binaries directly from the [binaries](https://github.com/opsstack/mysql-signals/binaries) section.  We'll have RPMs and DEB packages as soon as things stabilize a bit.
 
 ### From Source:
 
@@ -48,5 +48,5 @@ There is a single external dependency, [pflag](https://github.com/ogier/pflag)
 See usage with:
 
 ```
-./mysql-signals --help
+./mysqlsignals --help
 ```
