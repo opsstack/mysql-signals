@@ -9,7 +9,7 @@ In addition, the code is not fully cleaned up.
 
 Usage:
 
-mysqlmetric [-S server] [-P port] [-u user] [-p password] [-c credential file] [-m metric] [-v] [-h]
+mysql-signals [-S server] [-P port] [-u user] [-p password] [-c credential file] [-m metric] [-v] [-h]
 
   The options are as follows:
 
