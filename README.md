@@ -21,7 +21,7 @@ mysqlsignals [-S server] [-P port] [-u user] [-p password] [-c credential file] 
        -s      Status file name, for storing last run time and counters, default 'status.file'
        -m      Metric to produce: (r)ate, (e)errors, (l)atency
        -v      Verbose, for debugging and more info. Default off.
-       -h      Help and usage.
+       -h      Help and usage
 
 ## TODO
 
