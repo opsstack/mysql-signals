@@ -289,13 +289,13 @@ func argsCheck(version string, copyright string) {
 		os.Exit(1)
 	}
 
+	// Require metric type
 	if argStatsMetric != "r" && argStatsMetric != "e" && argStatsMetric != "l" {
-		log.Fatalln("Stats Metric not valid - should be c, e, l")
+		log.Fatalln("Stats Metric not valid - should be r, e, l")
 		os.Exit(1)
 	}
 
 	// Can have cred file OR user/password
-
 	if argCredFileName != "" && (argServerUser != "" || argServerPassword != "") {
 		log.Fatalln("Cannot supply BOTH a credential file and a user or password.")
 		os.Exit(1)
