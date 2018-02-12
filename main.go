@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -27,6 +28,7 @@ var (
 	argServerPort     string
 	argServerUser     string
 	argServerPassword string
+	argProtocol       string
 	argStatsMetric    string
 	argStatusFileName string
 	argCredFileName   string
@@ -39,11 +41,12 @@ var (
 func init() {
 
 	// Setup arguments, must do before calling Parse()
-	flag.StringVarP(&argServerServer, "server", "S", "127.0.0.1", "Server Host")
+	flag.StringVarP(&argServerServer, "server", "S", "/tmp/mysql.sock", "Server Host")
 	flag.StringVarP(&argServerPort, "port", "P", "3306", "Server Port")
 	flag.StringVarP(&argServerUser, "user", "u", "", "User")
 	flag.StringVarP(&argServerPassword, "password", "p", "", "Password")
-	flag.StringVarP(&argStatsMetric, "metric", "m", "c", "Metric Type")
+	flag.StringVarP(&argProtocol, "protocol", "t", "", "Protocol")
+	flag.StringVarP(&argStatsMetric, "metric", "m", "r", "Metric Type")
 	flag.StringVarP(&argStatusFileName, "statusfile", "f", "", "Status File")
 	flag.StringVarP(&argCredFileName, "credfile", "c", "", "Credential File")
 	flag.BoolVarP(&flagVerbose, "verbose", "v", false, "Verbose Output")
@@ -56,23 +59,24 @@ func init() {
 func main() {
 
 	var (
-		err          error
-		infoFileName string
-		lastRunInfo  [4]int
-		lastRunCount int
-		lastRunTime  int
-		deltaTime    int
-		nowTime      int
-		deltaCount   int
-		rows         *sql.Rows
-		query        string
-		query2       string
-		result       string
-		rateCount    int
-		errorCount   int
-		latency      float64
-		queryRate    float64
-		errorRate    float64
+		err           error
+		infoFileName  string
+		lastRunInfo   [4]int
+		lastRunCount  int
+		lastRunTime   int
+		deltaTime     int
+		nowTime       int
+		deltaCount    int
+		rows          *sql.Rows
+		query         string
+		query2        string
+		result        string
+		rateCount     int
+		errorCount    int
+		latency       float64
+		queryRate     float64
+		errorRate     float64
+		protocolBlock string
 	)
 
 	startTime := time.Now()
@@ -139,8 +143,18 @@ func main() {
 	// Connect to the database and run queries
 
 	// Format: user:password@tcp(localhost:5555)/dbname?charset=utf8
-	dataSourceName := dbUser + ":" + dbPassword + "@" + "tcp(" + dbHost + ":" + dbPort +
-		")/" + dbDatabase + "?charset=" + dbCharSet
+
+	switch argProtocol {
+	case "TCP":
+		protocolBlock = "tcp(" + dbHost + ":" + dbPort + ")"
+
+	case "SOCKET":
+		protocolBlock = "unix(" + dbHost + ")"
+	}
+
+	dataSourceName := dbUser + ":" + dbPassword + "@" +
+		protocolBlock +
+		"/" + dbDatabase + "?charset=" + dbCharSet
 	db, err := sql.Open("mysql", dataSourceName)
 	checkErr(err)
 
@@ -281,6 +295,8 @@ func main() {
 // Process arguments
 func argsCheck(version string, copyright string) {
 
+	argProtocol = strings.ToUpper(argProtocol) // Upper case protocol
+
 	if flagHelp {
 		fmt.Printf("GoldenWebReader Version %s - %s\n\n", version, copyright)
 		fmt.Printf("Usage: %s [options]\n\n", os.Args[0])
@@ -289,7 +305,38 @@ func argsCheck(version string, copyright string) {
 		os.Exit(1)
 	}
 
+	// Set protocol to SOCKET if blank and host is localhost (like mysql CLI)
+	if argProtocol == "" {
+		if argServerServer == "/tmp/mysql.sock" {
+			argProtocol = "SOCKET"
+		} else {
+			argProtocol = "TCP"
+		}
+	}
+
+	// Check protocol is valid
+	if argProtocol != "TCP" && argProtocol != "SOCKET" {
+		log.Fatalln("Protocol not valid - should be TCP or SOCKET")
+		os.Exit(1)
+	}
+
+	// Make sure not using localhost if using SOCKET
+	if argProtocol == "SOCKET" && argServerServer == "127.0.0.1" {
+		log.Fatalln("Host 127.0.0.1 not valid for SOCKET Protocol.")
+		os.Exit(1)
+	}
+
+	// Make sure not using localhost if using SOCKET
+	if argProtocol == "SOCKET" && argServerServer == "localhost" {
+		log.Fatalln("Host localhost not valid for SOCKET Protocol, as this is not mysql CLI. Use socket path.")
+		os.Exit(1)
+	}
+
 	// Require metric type
+	if argStatsMetric == "" {
+		log.Fatalln("Stats Metric missing - should be r, e, l")
+		os.Exit(1)
+	}
 	if argStatsMetric != "r" && argStatsMetric != "e" && argStatsMetric != "l" {
 		log.Fatalln("Stats Metric not valid - should be r, e, l")
 		os.Exit(1)
@@ -300,6 +347,7 @@ func argsCheck(version string, copyright string) {
 		log.Fatalln("Cannot supply BOTH a credential file and a user or password.")
 		os.Exit(1)
 	}
+
 }
 
 // Error checking for various things

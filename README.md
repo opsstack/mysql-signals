@@ -13,10 +13,11 @@ mysqlsignals [-S server] [-P port] [-u user] [-p password] [-c credential file] 
 
   The options are as follows:
 
-       -S      MySQL Server, DNS name or IP. deafult 127.0.0.1
-       -P      MySQL Port, default 3306
+       -S      MySQL Server, DNS name, IP, or Unix socket path. Default is /tmp/mysql.sock
+       -P      MySQL Port, default 3306 (ingored for SOCKET protocol)
        -u      MySQL user
        -p      MySQL password
+       -t      Protocol, TCP or SOCKET. Default is SOCKET if host is /tmp/mysql.sock or blank, otherwise TCP
        -c      Credential file name (with username on first line and password on second line)
        -s      Status file name, for storing last run time and counters, default 'status.file'
        -m      Metric to produce: (r)ate, (e)errors, (l)atency
