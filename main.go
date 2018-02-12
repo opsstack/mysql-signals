@@ -332,6 +332,13 @@ func argsCheck(version string, copyright string) {
 		os.Exit(1)
 	}
 
+	// Don't allow localhost on TCP as too confusing
+	if argProtocol == "TCP" && argServerServer == "localhost" {
+		log.Fatalln("We don't allow Host localhost for TCP Protocol as too confusing / conflicts with mysql CLI.")
+		log.Fatal("- Use 127.0.0.1 if you want to connect to localhost on TCP. ")
+		os.Exit(1)
+	}
+
 	// Require metric type
 	if argStatsMetric == "" {
 		log.Fatalln("Stats Metric missing - should be r, e, l")
